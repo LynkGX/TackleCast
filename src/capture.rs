@@ -907,7 +907,12 @@ fn run_device_capture_inner(
         "video_size",
         &format!("{requested_width}x{requested_height}"),
     );
-    options.set("framerate", &requested_fps.key());
+    // This Elgato driver negotiates 1440p60 NV12 without an explicit framerate.
+    let use_driver_framerate = cfg!(target_os = "windows")
+        && device_name.to_ascii_lowercase().contains("ven_12ab&dev_0710");
+    if !use_driver_framerate {
+        options.set("framerate", &requested_fps.key());
+    }
     options.set("rtbufsize", "16M");
     options.set("probesize", "5000000");
     options.set("analyzeduration", "1000000");
