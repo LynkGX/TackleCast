@@ -909,7 +909,9 @@ fn run_device_capture_inner(
     );
     // This Elgato driver negotiates 1440p60 NV12 without an explicit framerate.
     let use_driver_framerate = cfg!(target_os = "windows")
-        && device_name.to_ascii_lowercase().contains("ven_12ab&dev_0710");
+        && device_name
+            .to_ascii_lowercase()
+            .contains("ven_12ab&dev_0710");
     if !use_driver_framerate {
         options.set("framerate", &requested_fps.key());
     }
