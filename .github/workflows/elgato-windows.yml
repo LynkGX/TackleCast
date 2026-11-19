@@ -3,7 +3,7 @@ name: TackleCast v3.0.0 Elgato Windows x64
 on:
   push:
     branches: [elgato-1440p-v3.0.0]
-    paths: [.github/workflows/elgato-windows.yml]
+    paths: [.github/workflows/elgato-windows.yml, src/capture.rs]
 
 permissions:
   contents: read
@@ -21,6 +21,8 @@ jobs:
           toolchain: 1.93.1
           components: rustfmt
           targets: x86_64-pc-windows-msvc
+      - name: Check Rust formatting
+        run: cargo fmt --all --check
       - name: Windows runtime dependencies
         shell: powershell
         run: .\scripts\setup_windows_dependencies.ps1 -IncludeGpuRuntime
@@ -42,8 +44,6 @@ jobs:
           PATCHED_COMMIT: ${{ github.sha }}
         run: |
           $ErrorActionPreference = 'Stop'
-          cargo fmt --all --check
-          if ($LASTEXITCODE -ne 0) { throw 'Rust formatting check failed' }
           .\scripts\package_rust_release.ps1 -PackageName TackleCast-Windows-x86_64 -RequireGpuDlls -RequireFrameGen -Zip
           $archive = 'dist/TackleCast-Windows-x86_64.zip'
           Expand-Archive -LiteralPath $archive -DestinationPath dist/extracted-windows
